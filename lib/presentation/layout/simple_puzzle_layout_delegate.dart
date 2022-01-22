@@ -7,6 +7,7 @@ import 'package:very_good_slide_puzzle/domain/puzzle/puzzle.dart';
 import 'package:very_good_slide_puzzle/l10n/l10n.dart';
 import 'package:very_good_slide_puzzle/presentation/colors/colors.dart';
 import 'package:very_good_slide_puzzle/presentation/layout/layout.dart';
+import 'package:very_good_slide_puzzle/presentation/puzzle/puzzle.dart';
 import 'package:very_good_slide_puzzle/presentation/theme/theme.dart';
 import 'package:very_good_slide_puzzle/presentation/typography/typography.dart';
 import 'package:very_good_slide_puzzle/presentation/widgets/widgets.dart';
@@ -63,16 +64,16 @@ class SimplePuzzleLayoutDelegate extends PuzzleLayoutDelegate {
           width: 184,
           height: 118,
           child: Image.asset(
-            'assets/images/tree.png',
-            key: const Key('tree'),
+            'assets/images/simple_dash_small.png',
+            key: const Key('simple_puzzle_dash_small'),
           ),
         ),
         medium: (_, __) => SizedBox(
           width: 380.44,
           height: 214,
           child: Image.asset(
-            'assets/images/tree.png',
-            key: const Key('tree'),
+            'assets/images/simple_dash_medium.png',
+            key: const Key('simple_puzzle_dash_medium'),
           ),
         ),
         large: (_, __) => Padding(
@@ -81,8 +82,8 @@ class SimplePuzzleLayoutDelegate extends PuzzleLayoutDelegate {
             width: 568.99,
             height: 320,
             child: Image.asset(
-              'assets/images/tree.png',
-              key: const Key('tree'),
+              'assets/images/simple_dash_large.png',
+              key: const Key('simple_puzzle_dash_large'),
             ),
           ),
         ),
@@ -190,7 +191,9 @@ class SimpleStartSection extends StatelessWidget {
           medium: 83,
           large: 151,
         ),
-        const PuzzleName(),
+        PuzzleName(
+          key: puzzleNameKey,
+        ),
         const ResponsiveGap(large: 16),
         SimplePuzzleTitle(
           status: state.puzzleStatus,
@@ -201,10 +204,14 @@ class SimpleStartSection extends StatelessWidget {
           large: 32,
         ),
         NumberOfMovesAndTilesLeft(
+          key: numberOfMovesAndTilesLeftKey,
           numberOfMoves: state.numberOfMoves,
           numberOfTilesLeft: state.numberOfTilesLeft,
         ),
-        const ResponsiveGap(large: 32),
+        const ResponsiveGap(
+          large: 32,
+          small: 16,
+        ),
         ResponsiveLayoutBuilder(
           small: (_, __) => const SizedBox(),
           medium: (_, __) => const SizedBox(),
@@ -229,12 +236,13 @@ class SimplePuzzleTitle extends StatelessWidget {
     required this.status,
   }) : super(key: key);
 
-  /// The state of the puzzle.
+  /// The status of the puzzle.
   final PuzzleStatus status;
 
   @override
   Widget build(BuildContext context) {
     return PuzzleTitle(
+      key: puzzleTitleKey,
       title: status == PuzzleStatus.complete
           ? context.l10n.puzzleCompleted
           : context.l10n.puzzleChallengeTitle,
@@ -346,7 +354,14 @@ class SimplePuzzleTile extends StatelessWidget {
       onPressed: state.puzzleStatus == PuzzleStatus.incomplete
           ? () => context.read<PuzzleBloc>().add(TileTapped(tile))
           : null,
-      child: Text(tile.value.toString()),
+      child: Text(
+        tile.value.toString(),
+        semanticsLabel: context.l10n.puzzleTileLabelText(
+          tile.value.toString(),
+          tile.currentPosition.x.toString(),
+          tile.currentPosition.y.toString(),
+        ),
+      ),
     );
   }
 }
